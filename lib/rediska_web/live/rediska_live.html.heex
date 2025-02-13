@@ -1,0 +1,18 @@
+<h1
+  class="opacity-50 font-mono text-9xl italic tracking-widest text-outline-white bg-gradient-to-r from-red-500 via-pink-500 to-green-500 bg-clip-text text-transparent">
+  Rediska.
+</h1>
+<div w-full class="p-6 shadow-lg bg-white mt-20 grid grid-cols-[auto,1fr] gap-4">
+  <aside class="grid grid-cols-1 gap-4">
+    <.custom_button type="regular" text="Create" on_click={show_modal("redis-modal")} />
+    <.custom_button type="lockable" text="Update" locked={true}/>
+    <.custom_button type="lockable" text="Delete" locked={false}/>
+  </aside>
+  <.custom_table items={[%{"key" => "hello" , "value" => "world" }, %{"key" => "hello" , "value" => "worldd" }]} selected_row={@selected_row} page={@page}/>
+  <.modal id="redis-modal">
+    <form>
+      <input />
+      <input />
+    </form>
+  </.modal>
+</div>

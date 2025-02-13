@@ -1,0 +1,29 @@
+@import "tailwindcss/base";
+@import "tailwindcss/components";
+@import "tailwindcss/utilities";
+
+/* This file is for your main application CSS */
+@keyframes iamhere {
+    0% {
+        right: -30px;  
+    }
+    50% {
+        right: -40px;
+    }
+    100%{
+        right: -30px;
+    }
+}
+@layer utilities {
+    .selected-row {
+      background-color: oklch(0.899 0.061 343.231);
+    }
+  
+    .selected-icon {
+      position: absolute;
+      animation: iamhere 2s ease-in-out infinite;
+      top: 20%;
+    }
+  }
+  
+  
