@@ -4,15 +4,58 @@
 </h1>
 <div w-full class="p-6 shadow-lg bg-white mt-20 grid grid-cols-[auto,1fr] gap-4">
   <aside class="grid grid-cols-1 gap-4">
-    <.custom_button type="regular" text="Create" on_click={show_modal("redis-modal")} />
-    <.custom_button type="lockable" text="Update" locked={true}/>
-    <.custom_button type="lockable" text="Delete" locked={false}/>
+    <.custom_button type="regular" text="Create" on_click={JS.push("clean_select") |> JS.push("enable_modals") |>
+      show_modal("redis-modal")} />
+      <.custom_button type="lockable" text="Update" locked={is_nil(@selected_row)} on_click={JS.push("update_form") |>
+        JS.push("enable_modals") |>
+        show_modal("redis-modal")} />
+        <.custom_button type="lockable" text="Delete" locked={is_nil(@selected_row)} on_click={JS.push("enable_modals")
+          |> show_modal("delete-modal")} />
   </aside>
-  <.custom_table items={[%{"key" => "hello" , "value" => "world" }, %{"key" => "hello" , "value" => "worldd" }]} selected_row={@selected_row} page={@page}/>
-  <.modal id="redis-modal">
-    <form>
-      <input />
-      <input />
-    </form>
+  <.custom_table items={@items} selected_row={@selected_row} page={@page} />
+  <.modal id="redis-modal" on_cancel={JS.push("cancel")} :if={@modal_enabled}>
+    <div class="bg-pink-500 opacity-75 text-white text-center font-bold py-2 rounded-t-lg">
+      {if is_nil(@selected_row), do: "New Entry", else: "Update Entry"}
+    </div>
+    <.form for={@form} phx-submit={if is_nil(@selected_row), do: "save" , else: "update" } class="p-6 w-[350px]">
+      <div class="mb-8 space-y-4">
+        <div>
+          <label for="schema_red_key" class="text-pink-600 font-semibold">Key</label>
+          <.input type="text" field={@form[:red_key]} placeholder="Enter key" />
+        </div>
+        <div>
+          <label for="schema_red_value" class="text-pink-600 font-semibold">Value</label>
+          <.input type="text" field={@form[:red_value]} placeholder="Enter value" />
+        </div>
+      </div>
+      <div class="flex justify-between px-4 pb-4 select-none">
+        <button type="button"
+          class="rounded-full bg-transparent ring-2 ring-gray-500 px-4 py-2 font-bold shadow-lg hover:bg-pink-500 hover:text-white hover:ring-0 transition"
+          phx-click={JS.exec("data-cancel", [to: "#redis-modal" ])}>
+          Cancel
+        </button>
+        <button type="submit"
+          class="rounded-full bg-green-500 px-4 py-2 text-white font-bold shadow-lg hover:bg-green-600 transition">
+          Save
+        </button>
+      </div>
+    </.form>
+  </.modal>
+  <.modal id="delete-modal" :if={@modal_enabled}>
+    <div class="bg-pink-500 opacity-75 text-white text-center font-bold py-2 px-2 mb-4 rounded-t-lg">
+      Delete Entry? Are you sure?
+    </div>
+    <div class="flex justify-between px-4 pb-4 select-none">
+      <button type="button"
+        class="rounded-full bg-transparent ring-2 ring-gray-500 px-4 py-2 font-bold shadow-lg hover:bg-pink-500 hover:text-white hover:ring-0 transition"
+        phx-click={JS.exec("data-cancel", [to: "#delete-modal" ])}>
+        Cancel
+      </button>
+      <button phx-click={JS.push("delete", value: %{"row"=> @selected_row})
+        }
+        class="rounded-full bg-green-500 px-4 py-2 text-white font-bold shadow-lg hover:bg-green-600 transition">
+        Confirm
+      </button>
+    </div>
   </.modal>
 </div>

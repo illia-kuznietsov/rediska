@@ -36,6 +36,8 @@ defmodule Rediska.MixProject do
       {:phoenix_html, "~> 4.1"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
       {:phoenix_live_view, "~> 1.0.0"},
+      {:phoenix_ecto, "~> 4.6"},
+      {:ecto, "~> 3.12"},
       {:redix, "~> 1.5"},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
