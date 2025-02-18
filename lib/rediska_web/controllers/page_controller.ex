@@ -1,3 +1,3 @@
 defmodule RediskaWeb.PageController do
-  use RediskaWeb, :controller
+  use RediskaWeb, :live_view
 end

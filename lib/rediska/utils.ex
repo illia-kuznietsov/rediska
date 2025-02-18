@@ -22,7 +22,10 @@ defmodule Rediska.Utils do
     current_key = Map.keys(item) |> hd
 
     changeset =
-      Item.changeset(%Item{red_key: current_key, red_value: item[key]}, %{red_key: key, red_value: value})
+      Item.changeset(%Item{red_key: current_key, red_value: item[key]}, %{
+        red_key: key,
+        red_value: value
+      })
       |> Map.put(:action, :validate)
 
     with [] <- changeset.errors, {:ok, item} <- Rediska.Redis.set_kv(key, value) do

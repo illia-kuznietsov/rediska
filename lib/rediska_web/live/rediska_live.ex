@@ -6,6 +6,7 @@ defmodule RediskaWeb.RediskaLive do
   def mount(_params, _session, socket) do
     items = Rediska.Utils.get_items()
     form = Item.changeset(%{}) |> to_form()
+
     {:ok,
      socket
      |> assign(
@@ -34,7 +35,8 @@ defmodule RediskaWeb.RediskaLive do
     key = row |> Map.keys() |> hd()
     value = row[key]
 
-    form_data = Item.changeset(%Item{red_key: key, red_value: value}, %{red_key: key, red_value: value})
+    form_data =
+      Item.changeset(%Item{red_key: key, red_value: value}, %{red_key: key, red_value: value})
 
     {:noreply, socket |> assign(form: to_form(form_data))}
   end
@@ -56,18 +58,23 @@ defmodule RediskaWeb.RediskaLive do
       case Rediska.Utils.delete_item(key) do
         {:ok, message} ->
           Process.send_after(self(), :clear_flash, 3000)
+          Process.send_after(self(), :enable_modal, 1)
+
           socket
           |> push_event("hide_modal", %{id: "delete-modal"})
           |> update(:items, &(&1 -- [row]))
           |> assign(page_count: Float.ceil(length(socket.assigns.items) / @page_size) |> trunc())
           |> put_flash(:info, message)
+
         {:error, reason} ->
           Process.send_after(self(), :clear_flash, 3000)
+
           socket
           |> push_event("hide_modal", %{id: "delete-modal"})
           |> put_flash(:error, reason)
       end
-      {:noreply, socket |> assign(modal_enabled: false)}
+
+    {:noreply, socket |> assign(modal_enabled: false, selected_row: nil)}
   end
 
   def handle_event("save", %{"schema" => %{"red_key" => key, "red_value" => value}}, socket) do
@@ -75,6 +82,7 @@ defmodule RediskaWeb.RediskaLive do
       case Rediska.Utils.create_item(key, value) do
         {:ok, pair} ->
           Process.send_after(self(), :clear_flash, 3000)
+          Process.send_after(self(), :enable_modal, 1)
 
           socket
           |> push_event("hide_modal", %{id: "redis-modal"})
@@ -90,16 +98,25 @@ defmodule RediskaWeb.RediskaLive do
     {:noreply, socket}
   end
 
-  def handle_event("update", %{"schema" => %{"red_key" => key, "red_value" => value}}, %{assigns: %{selected_row: row}} = socket) do
+  def handle_event(
+        "update",
+        %{"schema" => %{"red_key" => key, "red_value" => value}},
+        %{assigns: %{selected_row: row}} = socket
+      ) do
     socket =
       case Rediska.Utils.update_item(row, key, value) do
         {:ok, pair} ->
           Process.send_after(self(), :clear_flash, 3000)
+          Process.send_after(self(), :enable_modal, 1)
 
           socket
           |> push_event("hide_modal", %{id: "redis-modal"})
           |> update(:items, &List.insert_at(&1 -- [row], -0, pair))
-          |> assign(form: Item.changeset(%{}) |> to_form(), modal_enabled: false)
+          |> assign(
+            form: Item.changeset(%{}) |> to_form(),
+            modal_enabled: false,
+            selected_row: nil
+          )
           |> put_flash(:info, "Success! Key-Value pair was stored to the database.")
 
         {:error, changeset} ->
@@ -115,7 +132,11 @@ defmodule RediskaWeb.RediskaLive do
   end
 
   def handle_info(:clear_flash, socket) do
-    {:noreply, socket |> clear_flash |> assign(modal_enabled: true)}
+    {:noreply, socket |> clear_flash}
+  end
+
+  def handle_info(:enable_modal, socket) do
+    {:noreply, socket |> assign(modal_enabled: true)}
   end
 
   attr :text, :string

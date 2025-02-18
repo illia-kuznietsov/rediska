@@ -621,6 +621,7 @@ defmodule RediskaWeb.CoreComponents do
     )
     |> show("##{id}-container")
     |> JS.add_class("overflow-hidden", to: "body")
+
     # |> JS.focus_first(to: "##{id}-content")
   end
 

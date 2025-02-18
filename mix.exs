@@ -39,6 +39,7 @@ defmodule Rediska.MixProject do
       {:phoenix_ecto, "~> 4.6"},
       {:ecto, "~> 3.12"},
       {:redix, "~> 1.5"},
+      {:mox, "~> 1.2", only: :test},
       {:floki, ">= 0.30.0", only: :test},
       {:phoenix_live_dashboard, "~> 0.8.3"},
       {:esbuild, "~> 0.8", runtime: Mix.env() == :dev},

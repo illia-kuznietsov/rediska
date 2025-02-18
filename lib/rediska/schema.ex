@@ -4,8 +4,8 @@ defmodule Rediska.Schema do
 
   @primary_key false
   embedded_schema do
-    field :red_key, :string
-    field :red_value, :string
+    field(:red_key, :string)
+    field(:red_value, :string)
   end
 
   def changeset(item \\ %Rediska.Schema{}, attrs) do
@@ -14,7 +14,7 @@ defmodule Rediska.Schema do
     |> validate_required([:red_key, :red_value])
     |> validate_change(:red_key, fn :red_key, key ->
       if key in Rediska.Redis.get_keys() do
-         [red_key: {"already taken", [validation: :required]}]
+        [red_key: {"already taken", [validation: :required]}]
       else
         []
       end
