@@ -9,7 +9,7 @@ import Config
 # Binding to loopback ipv4 address prevents access from other machines.
 config :rediska, RediskaWeb.Endpoint,
   # Change to `ip: {0, 0, 0, 0}` to allow access from other machines.
-  http: [ip: {127, 0, 0, 1}, port: 4000],
+  http: [ip: {0, 0, 0, 0}, port: 4000],
   check_origin: false,
   code_reloader: true,
   debug_errors: true,
@@ -18,6 +18,10 @@ config :rediska, RediskaWeb.Endpoint,
     esbuild: {Esbuild, :install_and_run, [:rediska, ~w(--sourcemap=inline --watch)]},
     tailwind: {Tailwind, :install_and_run, [:rediska, ~w(--watch)]}
   ]
+
+config :rediska, Rediska.Redis,
+  host: System.get_env("REDIS_HOST", "redis"),
+  port: String.to_integer(System.get_env("REDIS_PORT", "6379"))
 
 # ## SSL Support
 #

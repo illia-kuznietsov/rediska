@@ -1,8 +1,8 @@
+#!/bin/sh
 set -e
 
 mix deps.get
 
-cd assets && npm install
-cd ..
+mix setup
 
 mix phx.server

@@ -11,7 +11,11 @@ defmodule Rediska.Application do
       RediskaWeb.Telemetry,
       {DNSCluster, query: Application.get_env(:rediska, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Rediska.PubSub},
-      {Redix, host: "localhost", name: :redis, port: 6379},
+      {Redix,
+       name: :redis,
+       host: Application.fetch_env!(:rediska, Rediska.Redis)[:host],
+       port: Application.fetch_env!(:rediska, Rediska.Redis)[:port]},
+
       # Start the Finch HTTP client for sending emails
       {Finch, name: Rediska.Finch},
       # Start a worker by calling: Rediska.Worker.start_link(arg)
